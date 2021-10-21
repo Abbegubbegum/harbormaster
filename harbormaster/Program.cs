@@ -12,17 +12,36 @@ string gameState = "game";
 
 Boat b = new Boat();
 
+Mouse mouse = new Mouse();
+
 Rectangle target = new Rectangle(600, 600, 30, 30);
 
-Vector2 mousePos;
+
 
 while (!Raylib.WindowShouldClose())
 {
     if (gameState == "game")
     {
         //LOGIC
-        mousePos = new Vector2(Raylib.GetMouseX(), Raylib.GetMouseY());
-        b.dir = Vector2.Normalize(mousePos - b.center) * 10;
+        mouse.Update();
+        // b.SetDir(mouse.pos);
+
+        if (mouse.clickPos != new Vector2())
+        {
+            // b.SetDir(mouse.clickPos);
+            if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.r))
+            {
+                mouse.selectedboat = b;
+                b.selected = true;
+            }
+            else
+            {
+                //if (mouse.selectedboat finns)
+                {
+                    mouse.selectedboat.p.AddNode(mouse.clickPos);
+                }
+            }
+        }
 
         b.Update();
 
