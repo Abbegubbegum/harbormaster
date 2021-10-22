@@ -4,9 +4,9 @@ using System.Numerics;
 using Raylib_cs;
 
 //RAYLIB SHIT
-const int windowHeight = 1020;
-const int windowWidth = 800;
-Raylib.InitWindow(windowHeight, windowWidth, "Harbor Master");
+const int windowWidth = 1020;
+const int windowHeight = 800;
+Raylib.InitWindow(windowWidth, windowHeight, "Harbor Master");
 Raylib.SetTargetFPS(60);
 
 //Game Variables
