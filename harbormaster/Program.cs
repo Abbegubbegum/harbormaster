@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raylib_cs;
 
@@ -15,7 +16,7 @@ string gameState = "game";
 Mouse mouse = new Mouse();
 
 //Boat
-Boat b = new Boat();
+List<Boat> boats = new List<Boat>() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
 
 //Placeholder
 Rectangle target = new Rectangle(600, 600, 30, 30);
@@ -32,34 +33,39 @@ while (!Raylib.WindowShouldClose())
         //Update all mouse positions
         mouse.Update();
 
-        // b.SetDir(mouse.pos);
 
         //If mouse clicked somewhere
         if (mouse.clickPos != new Vector2())
         {
-            // b.SetDir(mouse.clickPos);
-
-            //If it clicked on boat, select that boat
-            if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.r))
+            bool boatClick = false;
+            for (int i = 0; i < boats.Count; i++)
             {
-                mouse.selectedboat = b;
-                b.selected = true;
+                //If it clicked on boat, select that boat
+                if (Raylib.CheckCollisionPointCircle(mouse.clickPos, boats[i].center, boats[i].r))
+                {
+                    mouse.selectedboat = boats[i];
+                    boats[i].selected = true;
+                    boatClick = true;
+                }
             }
-            //Else add node to selected nodes path
-            else
+            if (!boatClick)
             {
                 mouse.selectedboat.p.AddNode(mouse.clickPos);
             }
         }
 
         //Boat Movement
-        b.Update();
-
-        //Placeholder
-        if (Raylib.CheckCollisionCircleRec(b.center, b.r, target))
+        for (int i = 0; i < boats.Count; i++)
         {
-            gameState = "end";
+            boats[i].Update();
+
+            //Placeholder
+            if (Raylib.CheckCollisionCircleRec(boats[i].center, boats[i].r, target))
+            {
+                gameState = "end";
+            }
         }
+
 
 
         //---------DRAWING---------
@@ -67,11 +73,13 @@ while (!Raylib.WindowShouldClose())
         Raylib.ClearBackground(Color.WHITE);
 
         //Boats
-        b.Draw();
+        for (int i = 0; i < boats.Count; i++)
+        {
+            boats[i].Draw();
+        }
 
         //Placeholders
         Raylib.DrawRectangleRec(target, Color.DARKBLUE);
-        Raylib.DrawLineV(b.center, b.center + (b.dir * 10), Color.BLACK);
 
         Raylib.EndDrawing();
     }

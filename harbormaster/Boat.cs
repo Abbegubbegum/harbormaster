@@ -11,7 +11,7 @@ public class Boat
     // public int TriangleLenght { get; private set; } = 10;
 
     //Body 
-    public Vector2 center = new Vector2(100, 400);
+    public Vector2 center;
     public int r = 12;
 
     //Color 
@@ -21,13 +21,19 @@ public class Boat
     public bool selected = false;
 
     //Movement 
-    public Vector2 dir = new Vector2(0, 0);
+    public Vector2 dir;
     private float speed = 2f;
 
     //Pathfinding
     public Path p = new Path();
     private float pathCollisionMargin = 1f;
 
+    public Boat(int posx, int posy, int dirx, int diry)
+    {
+        center = new Vector2(posx, posy);
+
+        dir = Vector2.Normalize(new Vector2(dirx, diry));
+    }
 
     public void Update()
     {

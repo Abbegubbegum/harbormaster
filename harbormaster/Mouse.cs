@@ -10,7 +10,7 @@ public class Mouse
     public Vector2 clickPos = new Vector2();
 
     //Filled with a placeholder boat as default
-    public Boat selectedboat = new Boat();
+    public Boat selectedboat = new Boat(0, 0, 0, 0);
 
 
     public void Update()
@@ -31,7 +31,7 @@ public class Mouse
         if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
         {
             selectedboat.selected = false;
-            selectedboat = new Boat();
+            selectedboat = new Boat(0, 0, 0, 0);
         }
 
 
