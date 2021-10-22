@@ -28,6 +28,9 @@ public class Boat
     public Path p = new Path();
     private float pathCollisionMargin = 1f;
 
+    //Game
+    public bool destroyed = false;
+
     public Boat(int posx, int posy, int dirx, int diry)
     {
         center = new Vector2(posx, posy);

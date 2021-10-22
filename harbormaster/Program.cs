@@ -15,11 +15,12 @@ string gameState = "game";
 //Instanciate Mouse Class
 Mouse mouse = new Mouse();
 
+
+//Dock
+Dock d = new Dock(windowWidth / 2);
+
 //Boat
 List<Boat> boats = new List<Boat>() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
-
-//Placeholder
-Rectangle target = new Rectangle(600, 600, 30, 30);
 
 
 
@@ -30,11 +31,11 @@ while (!Raylib.WindowShouldClose())
     {
         //---------LOGIC---------
 
-        //Update all mouse positions
+        //Update all mouse inputs
         mouse.Update();
 
 
-        //If mouse clicked somewhere
+        //If mouse clicked somewhere this frame
         if (mouse.clickPos != new Vector2())
         {
             bool boatClick = false;
@@ -43,14 +44,26 @@ while (!Raylib.WindowShouldClose())
                 //If it clicked on boat, select that boat
                 if (Raylib.CheckCollisionPointCircle(mouse.clickPos, boats[i].center, boats[i].r))
                 {
+                    mouse.selectedboat.selected = false;
                     mouse.selectedboat = boats[i];
                     boats[i].selected = true;
                     boatClick = true;
                 }
             }
+            //If it didn't click on a boat
             if (!boatClick)
             {
-                mouse.selectedboat.p.AddNode(mouse.clickPos);
+                //if it clicked on a dock, add a node to dock position
+                if (Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox))
+                {
+                    mouse.selectedboat.p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
+                    mouse.selectedboat.p.AddNode(d.center);
+                }
+                //else add regular node
+                else
+                {
+                    mouse.selectedboat.p.AddNode(mouse.clickPos);
+                }
             }
         }
 
@@ -59,10 +72,19 @@ while (!Raylib.WindowShouldClose())
         {
             boats[i].Update();
 
-            //Placeholder
-            if (Raylib.CheckCollisionCircleRec(boats[i].center, boats[i].r, target))
+            //Check each boat against each boat
+            for (int j = 0; j < boats.Count; j++)
             {
-                gameState = "end";
+                //if they aren't the same, check if they crashed into eachother
+                if (!boats[i].Equals(boats[j]))
+                {
+                    if (Raylib.CheckCollisionCircles(boats[i].center, boats[i].r, boats[j].center, boats[j].r))
+                    {
+                        boats[i].destroyed = true;
+                        boats[j].destroyed = true;
+                        gameState = "end";
+                    }
+                }
             }
         }
 
@@ -70,7 +92,7 @@ while (!Raylib.WindowShouldClose())
 
         //---------DRAWING---------
         Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.WHITE);
+        Raylib.ClearBackground(Color.SKYBLUE);
 
         //Boats
         for (int i = 0; i < boats.Count; i++)
@@ -78,8 +100,8 @@ while (!Raylib.WindowShouldClose())
             boats[i].Draw();
         }
 
-        //Placeholders
-        Raylib.DrawRectangleRec(target, Color.DARKBLUE);
+        //Dock
+        d.Draw();
 
         Raylib.EndDrawing();
     }

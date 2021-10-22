@@ -27,9 +27,15 @@ public class Path
         nodes.Add(target);
     }
 
-    //Removes the next node in the path
     public void RemoveFirstNode()
     {
         nodes.RemoveAt(0);
     }
+
+    public void RemoveLastNode()
+    {
+        nodes.RemoveAt(nodes.Count - 1);
+    }
+
+
 }
