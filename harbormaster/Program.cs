@@ -39,14 +39,14 @@ while (!Raylib.WindowShouldClose())
         if (mouse.clickPos != new Vector2())
         {
             bool boatClick = false;
-            for (int i = 0; i < boats.Count; i++)
+            foreach (var b in boats)
             {
                 //If it clicked on boat, select that boat
-                if (Raylib.CheckCollisionPointCircle(mouse.clickPos, boats[i].center, boats[i].r))
+                if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.r))
                 {
                     mouse.selectedboat.selected = false;
-                    mouse.selectedboat = boats[i];
-                    boats[i].selected = true;
+                    mouse.selectedboat = b;
+                    b.selected = true;
                     boatClick = true;
                 }
             }
@@ -68,20 +68,20 @@ while (!Raylib.WindowShouldClose())
         }
 
         //Boat Movement
-        for (int i = 0; i < boats.Count; i++)
+        foreach (var b1 in boats)
         {
-            boats[i].Update();
+            b1.Update();
 
             //Check each boat against each boat
-            for (int j = 0; j < boats.Count; j++)
+            foreach (var b2 in boats)
             {
                 //if they aren't the same, check if they crashed into eachother
-                if (!boats[i].Equals(boats[j]))
+                if (!b1.Equals(b2))
                 {
-                    if (Raylib.CheckCollisionCircles(boats[i].center, boats[i].r, boats[j].center, boats[j].r))
+                    if (Raylib.CheckCollisionCircles(b1.center, b1.r, b2.center, b2.r))
                     {
-                        boats[i].destroyed = true;
-                        boats[j].destroyed = true;
+                        b1.destroyed = true;
+                        b2.destroyed = true;
                         gameState = "end";
                     }
                 }
@@ -95,10 +95,12 @@ while (!Raylib.WindowShouldClose())
         Raylib.ClearBackground(Color.SKYBLUE);
 
         //Boats
-        for (int i = 0; i < boats.Count; i++)
+
+        foreach (var b in boats)
         {
-            boats[i].Draw();
+            b.Draw();
         }
+
 
         //Dock
         d.Draw();
