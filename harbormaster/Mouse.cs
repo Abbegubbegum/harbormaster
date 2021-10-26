@@ -10,7 +10,7 @@ public class Mouse
     public Vector2 clickPos = new Vector2();
 
     //Filled with a placeholder boat as default
-    public Boat selectedboat = new Boat(0, 0, 0, 0);
+    public Boat selectedBoat = new Boat(0, 0, 0, 0);
 
 
     public void Update()
@@ -31,13 +31,13 @@ public class Mouse
         //If right mouse is clicked, empty selected boat completely
         if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
         {
-            selectedboat.selected = false;
-            selectedboat = new Boat(0, 0, 0, 0);
+            selectedBoat.selected = false;
+            selectedBoat = new Boat(0, 0, 0, 0);
         }
 
         if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
         {
-            selectedboat.p.RemoveLastNode();
+            selectedBoat.p.RemoveLastNode();
         }
 
 

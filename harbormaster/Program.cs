@@ -22,7 +22,8 @@ Dock d = new Dock(windowWidth / 2);
 //Boat
 List<Boat> boats = new List<Boat>() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
 
-
+//Removal thing
+List<Boat> boatRemovalList = new List<Boat>();
 
 while (!Raylib.WindowShouldClose())
 {
@@ -30,6 +31,11 @@ while (!Raylib.WindowShouldClose())
     if (gameState == "game")
     {
         //---------LOGIC---------
+        //If there are no more boats, the game is finished
+        if (boats.Count == 0)
+        {
+            gameState = "complete";
+        }
 
         //Update all mouse inputs
         mouse.Update();
@@ -44,8 +50,8 @@ while (!Raylib.WindowShouldClose())
                 //If it clicked on boat, select that boat
                 if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.r))
                 {
-                    mouse.selectedboat.selected = false;
-                    mouse.selectedboat = b;
+                    mouse.selectedBoat.selected = false;
+                    mouse.selectedBoat = b;
                     b.selected = true;
                     boatClick = true;
                 }
@@ -53,16 +59,17 @@ while (!Raylib.WindowShouldClose())
             //If it didn't click on a boat
             if (!boatClick)
             {
-                //if it clicked on a dock, add a node to dock position
-                if (Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox))
+                //if it clicked on a dock, add a node to dock position and set up shit for the dock
+                if (Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox) && mouse.selectedBoat.dockable)
                 {
-                    mouse.selectedboat.p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
-                    mouse.selectedboat.p.AddNode(d.center);
+                    mouse.selectedBoat.p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
+                    mouse.selectedBoat.p.AddNode(d.center);
+                    mouse.selectedBoat.OnPathToDock();
                 }
                 //else add regular node
-                else
+                else if (!Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox))
                 {
-                    mouse.selectedboat.p.AddNode(mouse.clickPos);
+                    mouse.selectedBoat.p.AddNode(mouse.clickPos);
                 }
             }
         }
@@ -86,7 +93,30 @@ while (!Raylib.WindowShouldClose())
                     }
                 }
             }
+
+            //If boat is offscreen
+            if (b1.center.X - b1.r > windowWidth || b1.center.X + b1.r < 0 || b1.center.Y - b1.r > windowHeight)
+            {
+                //If it still hadn't been docked, you lose
+                if (b1.dockable)
+                {
+                    gameState = "end";
+                }
+                //Else remove that boat from the list
+                else
+                {
+                    boatRemovalList.Add(b1);
+                }
+            }
         }
+
+
+        for (int i = 0; i < boatRemovalList.Count; i++)
+        {
+            boats.Remove(boatRemovalList[i]);
+        }
+
+        boatRemovalList.RemoveRange(0, boatRemovalList.Count);
 
 
 
@@ -95,7 +125,6 @@ while (!Raylib.WindowShouldClose())
         Raylib.ClearBackground(Color.SKYBLUE);
 
         //Boats
-
         foreach (var b in boats)
         {
             b.Draw();
@@ -113,7 +142,7 @@ while (!Raylib.WindowShouldClose())
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.WHITE);
 
-        Raylib.DrawText("END", 100, 100, 84, Color.BLACK);
+        Raylib.DrawText(gameState, 100, 100, 84, Color.BLACK);
 
         Raylib.EndDrawing();
     }

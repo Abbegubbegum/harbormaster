@@ -16,8 +16,11 @@ public class Boat
 
     //Color 
     private Color c = Color.RED;
-    private Color regularColor = Color.RED;
-    private Color highlightColor = Color.ORANGE;
+    private Color fullRegularColor = Color.RED;
+    private Color fullHighlightColor = Color.ORANGE;
+    private Color dockedColor = Color.YELLOW;
+    private Color finishedRegularColor = Color.LIME;
+    private Color finishedHighlightedColor = Color.GREEN;
     public bool selected = false;
 
     //Movement 
@@ -30,6 +33,10 @@ public class Boat
 
     //Game
     public bool destroyed = false;
+    public bool docked = false;
+    public bool dockable = true;
+    private int dockTimer = 0;
+    private int dockTime = 5;
 
     public Boat(int posx, int posy, int dirx, int diry)
     {
@@ -40,8 +47,20 @@ public class Boat
 
     public void Update()
     {
-        //If there is a path
-        if (p.nodes.Count != 0)
+        //If there isn't a path
+        if (p.nodes.Count == 0)
+        {
+            //If the path is disabled meaning that we had a path towards a dock but not anymore, the boat should be docked
+            if (p.disabled == true)
+            {
+                docked = true;
+                dockable = false;
+                dir = new Vector2(0, 0);
+                dockTimer++;
+            }
+        }
+        //Else if it still isn't docked
+        else if (!docked)
         {
             //If it reached the next node of the path, remove it
             if (Raylib.CheckCollisionPointCircle(p.nodes[0], center, pathCollisionMargin))
@@ -50,7 +69,7 @@ public class Boat
             }
         }
         //If it still has a path
-        if (p.nodes.Count != 0)
+        if (p.nodes.Count != 0 && !docked)
         {
             //Set direction towards next node in path
             SetDir(p.nodes[0]);
@@ -60,9 +79,23 @@ public class Boat
         center.X += dir.X * speed;
         center.Y += dir.Y * speed;
 
-        //Change color based on if its selected or not
-        c = selected ? highlightColor : regularColor;
+
+        //If the number of frames it has been docked is equal to the full time in seconds, undock the boat
+        if (dockTimer == dockTime * 60)
+        {
+            docked = false;
+            p.Toggle();
+            dir = new Vector2(0, 1);
+            dockTimer = 0;
+        }
+
+
+
+        //Change color based on different values
+        c = docked ? dockedColor : dockable ? selected ? fullHighlightColor : fullRegularColor : selected ? finishedHighlightedColor : finishedRegularColor;
     }
+
+
 
     public void Draw()
     {
@@ -92,5 +125,11 @@ public class Boat
     public void SetDir(Vector2 target)
     {
         dir = Vector2.Normalize(target - center);
+    }
+
+    //Called when the boat gets a path towards a dock
+    public void OnPathToDock()
+    {
+        p.Toggle();
     }
 }

@@ -8,6 +8,7 @@ public class Path
 {
     //List of all nodes 
     public List<Vector2> nodes = new List<Vector2>();
+    public bool disabled = false;
 
     //Draws the rest of the path of the boat that is selected
     public void Draw()
@@ -24,7 +25,10 @@ public class Path
     //Adds a node to the end of the path
     public void AddNode(Vector2 target)
     {
-        nodes.Add(target);
+        if (!disabled)
+        {
+            nodes.Add(target);
+        }
     }
 
     public void RemoveFirstNode()
@@ -35,6 +39,11 @@ public class Path
     public void RemoveLastNode()
     {
         nodes.RemoveAt(nodes.Count - 1);
+    }
+
+    public void Toggle()
+    {
+        disabled = !disabled;
     }
 
 
