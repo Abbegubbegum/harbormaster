@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using harbormaster;
 using Raylib_cs;
 
 //RAYLIB SHIT
@@ -13,17 +14,17 @@ Raylib.SetTargetFPS(60);
 string gameState = "game";
 
 //Instanciate Mouse Class
-Mouse mouse = new Mouse();
+Mouse mouse = new();
 
 
 //Dock
-Dock d = new Dock(windowWidth / 2);
+Dock d = new(windowWidth / 2);
 
 //Boat
-List<Boat> boats = new List<Boat>() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
+List<Boat> boats = new() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
 
 //Removal thing
-List<Boat> boatRemovalList = new List<Boat>();
+List<Boat> boatRemovalList = new();
 
 while (!Raylib.WindowShouldClose())
 {

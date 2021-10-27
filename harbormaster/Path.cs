@@ -3,48 +3,50 @@ using System.Numerics;
 using System.Collections.Generic;
 using Raylib_cs;
 
-
-public class Path
+namespace harbormaster
 {
-    //List of all nodes 
-    public List<Vector2> nodes = new List<Vector2>();
-    public bool disabled = false;
-
-    //Draws the rest of the path of the boat that is selected
-    public void Draw()
+    public class Path
     {
-        if (nodes.Count > 1)
+        //List of all nodes 
+        public List<Vector2> nodes = new();
+        public bool disabled = false;
+
+        //Draws the rest of the path of the boat that is selected
+        public void Draw()
         {
-            for (int i = 0; i < nodes.Count - 1; i++)
+            if (nodes.Count > 1)
             {
-                Raylib.DrawLineV(nodes[i], nodes[i + 1], Color.GRAY);
+                for (int i = 0; i < nodes.Count - 1; i++)
+                {
+                    Raylib.DrawLineV(nodes[i], nodes[i + 1], Color.GRAY);
+                }
             }
         }
-    }
 
-    //Adds a node to the end of the path
-    public void AddNode(Vector2 target)
-    {
-        if (!disabled)
+        //Adds a node to the end of the path
+        public void AddNode(Vector2 target)
         {
-            nodes.Add(target);
+            if (!disabled)
+            {
+                nodes.Add(target);
+            }
         }
+
+        public void RemoveFirstNode()
+        {
+            nodes.RemoveAt(0);
+        }
+
+        public void RemoveLastNode()
+        {
+            nodes.RemoveAt(nodes.Count - 1);
+        }
+
+        public void Toggle()
+        {
+            disabled = !disabled;
+        }
+
+
     }
-
-    public void RemoveFirstNode()
-    {
-        nodes.RemoveAt(0);
-    }
-
-    public void RemoveLastNode()
-    {
-        nodes.RemoveAt(nodes.Count - 1);
-    }
-
-    public void Toggle()
-    {
-        disabled = !disabled;
-    }
-
-
 }

@@ -2,44 +2,46 @@ using System;
 using System.Numerics;
 using Raylib_cs;
 
-
-public class Mouse
+namespace harbormaster
 {
-    public Vector2 pos;
-    ///Filled with an empty vector as default
-    public Vector2 clickPos = new Vector2();
-
-    //Filled with a placeholder boat as default
-    public Boat selectedBoat = new Boat(0, 0, 0, 0);
-
-
-    public void Update()
+    public class Mouse
     {
-        //Updates mouse position
-        pos = new Vector2(Raylib.GetMouseX(), Raylib.GetMouseY());
+        public Vector2 pos;
+        ///Filled with an empty vector as default
+        public Vector2 clickPos = new();
 
-        //If mouse is clicked this frame, save the position, otherwise empty it
-        if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+        //Filled with a placeholder boat as default
+        public Boat selectedBoat = new(0, 0, 0, 0);
+
+
+        public void Update()
         {
-            clickPos = pos;
-        }
-        else
-        {
-            clickPos = new Vector2();
-        }
+            //Updates mouse position
+            pos = new Vector2(Raylib.GetMouseX(), Raylib.GetMouseY());
 
-        //If right mouse is clicked, empty selected boat completely
-        if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
-        {
-            selectedBoat.selected = false;
-            selectedBoat = new Boat(0, 0, 0, 0);
+            //If mouse is clicked this frame, save the position, otherwise empty it
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            {
+                clickPos = pos;
+            }
+            else
+            {
+                clickPos = new Vector2();
+            }
+
+            //If right mouse is clicked, empty selected boat completely
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
+            {
+                selectedBoat.selected = false;
+                selectedBoat = new Boat(0, 0, 0, 0);
+            }
+
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
+            {
+                selectedBoat.p.RemoveLastNode();
+            }
+
+
         }
-
-        if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
-        {
-            selectedBoat.p.RemoveLastNode();
-        }
-
-
     }
 }
