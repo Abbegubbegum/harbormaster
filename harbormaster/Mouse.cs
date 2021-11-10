@@ -11,7 +11,7 @@ namespace harbormaster
         public Vector2 clickPos = new();
 
         //Filled with a placeholder boat as default
-        public Boat selectedBoat = new(0, 0, 0, 0);
+        public Boat selectedBoat = new(false);
 
 
         public void Update()
@@ -33,7 +33,7 @@ namespace harbormaster
             if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
             {
                 selectedBoat.selected = false;
-                selectedBoat = new Boat(0, 0, 0, 0);
+                selectedBoat = new Boat(false);
             }
 
             if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
@@ -42,6 +42,13 @@ namespace harbormaster
             }
 
 
+        }
+
+        public void OnDockClick(Dock d)
+        {
+            selectedBoat.p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
+            selectedBoat.p.AddNode(d.center);
+            selectedBoat.OnPathToDock();
         }
     }
 }

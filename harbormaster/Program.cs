@@ -12,16 +12,17 @@ Raylib.SetTargetFPS(60);
 
 //Game Variables
 string gameState = "game";
+int boatTimer = 10;
+int frameCount = 0;
 
 //Instanciate Mouse Class
 Mouse mouse = new();
-
 
 //Dock
 Dock d = new(windowWidth / 2);
 
 //Boat
-List<Boat> boats = new() { new Boat(100, 400, 1, 1000), new Boat(400, 200, 5, 1) };
+List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 400, 200, 5, 1) };
 
 //Removal thing
 List<Boat> boatRemovalList = new();
@@ -32,6 +33,15 @@ while (!Raylib.WindowShouldClose())
     if (gameState == "game")
     {
         //---------LOGIC---------
+
+        frameCount++;
+
+        if (frameCount / 60 == boatTimer)
+        {
+            frameCount = 0;
+            boats.Add(new Boat(true));
+        }
+
         //If there are no more boats, the game is finished
         if (boats.Count == 0)
         {
@@ -49,11 +59,11 @@ while (!Raylib.WindowShouldClose())
             foreach (var b in boats)
             {
                 //If it clicked on boat, select that boat
-                if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.r))
+                if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.radius))
                 {
                     mouse.selectedBoat.selected = false;
-                    mouse.selectedBoat = b;
                     b.selected = true;
+                    mouse.selectedBoat = b;
                     boatClick = true;
                 }
             }
@@ -63,9 +73,7 @@ while (!Raylib.WindowShouldClose())
                 //if it clicked on a dock, add a node to dock position and set up shit for the dock
                 if (Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox) && mouse.selectedBoat.dockable)
                 {
-                    mouse.selectedBoat.p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
-                    mouse.selectedBoat.p.AddNode(d.center);
-                    mouse.selectedBoat.OnPathToDock();
+                    mouse.OnDockClick(d);
                 }
                 //else add regular node
                 else if (!Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox))
@@ -76,19 +84,19 @@ while (!Raylib.WindowShouldClose())
         }
 
         //Boat Movement
-        foreach (var b1 in boats)
+        foreach (var b in boats)
         {
-            b1.Update();
+            b.Update();
 
             //Check each boat against each boat
             foreach (var b2 in boats)
             {
                 //if they aren't the same, check if they crashed into eachother
-                if (!b1.Equals(b2))
+                if (!b.Equals(b2))
                 {
-                    if (Raylib.CheckCollisionCircles(b1.center, b1.r, b2.center, b2.r))
+                    if (Raylib.CheckCollisionCircles(b.center, b.radius, b2.center, b2.radius))
                     {
-                        b1.destroyed = true;
+                        b.destroyed = true;
                         b2.destroyed = true;
                         gameState = "end";
                     }
@@ -96,17 +104,22 @@ while (!Raylib.WindowShouldClose())
             }
 
             //If boat is offscreen
-            if (b1.center.X - b1.r > windowWidth || b1.center.X + b1.r < 0 || b1.center.Y - b1.r > windowHeight)
+            if (b.center.X - b.radius > windowWidth || b.center.X + b.radius < 0 || b.center.Y - b.radius > windowHeight)
             {
-                //If it still hadn't been docked, you lose
-                if (b1.dockable)
+                if (!b.invincible)
                 {
-                    gameState = "end";
-                }
-                //Else remove that boat from the list
-                else
-                {
-                    boatRemovalList.Add(b1);
+                    //If it still hadn't been docked, you lose
+                    if (b.dockable)
+                    {
+                        b.outsideArea = true;
+                        gameState = "end";
+                    }
+
+                    //else remove that boat from the list
+                    else
+                    {
+                        boatRemovalList.Add(b);
+                    }
                 }
             }
         }

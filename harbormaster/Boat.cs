@@ -10,10 +10,13 @@ namespace harbormaster
         // public Rectangle rec = new Rectangle(100, 400, 25, 50);
         // public Vector2 center = new Vector2(rec.x + rec.width / 2, rec.y + rec.height / 2)
         // public int TriangleLenght { get; private set; } = 10;
+        //Global Variables
+        private const int windowWidth = 1020;
+        private const int windowHeight = 800;
 
         //Body 
         public Vector2 center;
-        public int r = 12;
+        public int radius = 12;
 
         //Color 
         private Color c = Color.RED;
@@ -38,16 +41,59 @@ namespace harbormaster
         public bool dockable = true;
         private int dockTimer = 0;
         private int dockTime = 5;
+        public bool invincible = true;
 
-        public Boat(int posx, int posy, int dirx, int diry)
+        //DEBUGGING
+        public bool outsideArea = false;
+
+
+
+        //Spawning
+        Random r = new();
+        private int outsideMargin = 20;
+
+        public Boat(bool randomize, int x = 0, int y = 0, int dirx = 0, int diry = 0)
         {
-            center = new Vector2(posx, posy);
+            if (randomize)
+            {
+                //Randomizes one of the 3 edges for simplicity
+                int edge = r.Next(0, 3);
+                switch (edge)
+                {
+                    case 0:
+                        center = new Vector2(-outsideMargin, r.Next(0 + radius, windowHeight - radius));
+                        break;
 
-            dir = Vector2.Normalize(new Vector2(dirx, diry));
+                    case 1:
+                        center = new Vector2(windowWidth + outsideMargin, r.Next(0 + radius, windowHeight - radius));
+                        break;
+
+                    case 2:
+                        center = new Vector2(r.Next(0 + radius, windowWidth - radius), windowHeight + outsideMargin);
+                        break;
+                }
+
+                SetDirToTarget(new Vector2(windowWidth / 2, windowHeight / 2));
+            }
+            else
+            {
+                center = new Vector2(x, y);
+
+                dir = Vector2.Normalize(new Vector2(dirx, diry));
+            }
+
         }
 
         public void Update()
         {
+            //If the boat is on the screen make it not invincible
+            if (center.X + radius < windowWidth && center.X - radius > 0 && center.Y + radius < windowHeight)
+            {
+                invincible = false;
+            }
+
+
+
             //If there isn't a path
             if (p.nodes.Count == 0)
             {
@@ -73,7 +119,7 @@ namespace harbormaster
             if (p.nodes.Count != 0 && !docked)
             {
                 //Set direction towards next node in path
-                SetDir(p.nodes[0]);
+                SetDirToTarget(p.nodes[0]);
             }
 
             //Move it based on direction
@@ -101,7 +147,7 @@ namespace harbormaster
         public void Draw()
         {
             //Draw Boat Circle
-            Raylib.DrawCircleV(center, r, c);
+            Raylib.DrawCircleV(center, radius, c);
 
             //OLD RECTANGLE SHIT WHICH I MIGHT DO SOMETIME BUT NOT NOW
             // Raylib.DrawRectangleRec(rec, c);
@@ -122,8 +168,8 @@ namespace harbormaster
 
         }
 
-        //Sets Direction of boat towards a Vector2
-        public void SetDir(Vector2 target)
+        //Sets Direction of boat towards a target Vector2
+        public void SetDirToTarget(Vector2 target)
         {
             dir = Vector2.Normalize(target - center);
         }
