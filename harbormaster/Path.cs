@@ -10,6 +10,12 @@ namespace harbormaster
         //List of all nodes 
         public List<Vector2> nodes = new();
         public bool disabled = false;
+        // private Boat parentBoat;
+
+        // public Path(Boat b)
+        // {
+        //     parentBoat = b;
+        // }
 
         //Draws the rest of the path of the boat that is selected
         public void Draw()
@@ -40,6 +46,7 @@ namespace harbormaster
         public void RemoveLastNode()
         {
             nodes.RemoveAt(nodes.Count - 1);
+            disabled = false;
         }
 
         public void Toggle()

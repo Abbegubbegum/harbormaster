@@ -32,7 +32,7 @@ namespace harbormaster
         private float speed = 2f;
 
         //Pathfinding
-        public Path p = new();
+        public Path p;
         private readonly float pathCollisionMargin = 1f;
 
         //Game
@@ -58,6 +58,8 @@ namespace harbormaster
             {
                 //Randomizes one of the 3 edges for simplicity
                 int edge = r.Next(0, 3);
+
+                //Randomizes the position on a line parallell of the random edge but offset with margin
                 switch (edge)
                 {
                     case 0:
@@ -73,6 +75,7 @@ namespace harbormaster
                         break;
                 }
 
+                //Set movement direction to the center of the screen to make sure it comes on screen
                 SetDirToTarget(new Vector2(windowWidth / 2, windowHeight / 2));
             }
             else
@@ -82,12 +85,13 @@ namespace harbormaster
                 dir = Vector2.Normalize(new Vector2(dirx, diry));
             }
 
+            p = new Path(this);
         }
 
         public void Update()
         {
             //If the boat is on the screen make it not invincible
-            if (center.X + radius < windowWidth && center.X - radius > 0 && center.Y + radius < windowHeight)
+            if (center.X + radius < windowWidth && center.X - radius > 0 && center.Y + radius < windowHeight && invincible)
             {
                 invincible = false;
             }

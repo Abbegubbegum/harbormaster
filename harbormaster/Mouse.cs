@@ -50,5 +50,19 @@ namespace harbormaster
             selectedBoat.p.AddNode(d.center);
             selectedBoat.OnPathToDock();
         }
+
+        public void AddNode(Dock d)
+        {
+            //if it clicked on a dock, add a node to dock position and set up shit for the dock
+            if (Raylib.CheckCollisionPointRec(clickPos, d.hitBox) && selectedBoat.dockable)
+            {
+                OnDockClick(d);
+            }
+            //else add regular node
+            else if (!Raylib.CheckCollisionPointRec(clickPos, d.hitBox))
+            {
+                selectedBoat.p.AddNode(clickPos);
+            }
+        }
     }
 }

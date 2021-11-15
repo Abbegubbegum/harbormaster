@@ -25,7 +25,7 @@ Dock d = new(windowWidth / 2);
 List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 400, 200, 5, 1) };
 
 //Removal thing
-List<Boat> boatRemovalList = new();
+Queue<Boat> boatRemovalList = new();
 
 while (!Raylib.WindowShouldClose())
 {
@@ -70,16 +70,7 @@ while (!Raylib.WindowShouldClose())
             //If it didn't click on a boat
             if (!boatClick)
             {
-                //if it clicked on a dock, add a node to dock position and set up shit for the dock
-                if (Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox) && mouse.selectedBoat.dockable)
-                {
-                    mouse.OnDockClick(d);
-                }
-                //else add regular node
-                else if (!Raylib.CheckCollisionPointRec(mouse.clickPos, d.hitBox))
-                {
-                    mouse.selectedBoat.p.AddNode(mouse.clickPos);
-                }
+                mouse.AddNode(d);
             }
         }
 
@@ -118,19 +109,17 @@ while (!Raylib.WindowShouldClose())
                     //else remove that boat from the list
                     else
                     {
-                        boatRemovalList.Add(b);
+                        boatRemovalList.Enqueue(b);
                     }
                 }
             }
         }
 
 
-        for (int i = 0; i < boatRemovalList.Count; i++)
+        while (boatRemovalList.Count > 0)
         {
-            boats.Remove(boatRemovalList[i]);
+            boats.Remove(boatRemovalList.Dequeue());
         }
-
-        boatRemovalList.RemoveRange(0, boatRemovalList.Count);
 
 
 
