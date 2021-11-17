@@ -32,7 +32,7 @@ namespace harbormaster
         private float speed = 2f;
 
         //Pathfinding
-        public Path p;
+        public Path p = new Path();
         private readonly float pathCollisionMargin = 1f;
 
         //Game
@@ -49,7 +49,7 @@ namespace harbormaster
 
 
         //Spawning
-        Random r = new();
+        private static Random r = new();
         private int outsideMargin = 20;
 
         public Boat(bool randomize, int x = 0, int y = 0, int dirx = 0, int diry = 0)
@@ -85,7 +85,7 @@ namespace harbormaster
                 dir = Vector2.Normalize(new Vector2(dirx, diry));
             }
 
-            p = new Path(this);
+            // p = new Path(this);
         }
 
         public void Update()
