@@ -33,9 +33,10 @@ while (!Raylib.WindowShouldClose())
     if (gameState == "game")
     {
         //---------LOGIC---------
-
+        //Incriment framecount
         frameCount++;
 
+        //If it has reached boatTimer seconds, reset clock and add new random boat
         if (frameCount / 60 == boatTimer)
         {
             frameCount = 0;
@@ -55,10 +56,13 @@ while (!Raylib.WindowShouldClose())
         //If mouse clicked somewhere this frame
         if (mouse.clickPos != new Vector2())
         {
+            //Temporary variable boatClick
             bool boatClick = false;
+
+            //For each boat
             foreach (var b in boats)
             {
-                //If it clicked on boat, select that boat
+                //If it clicked on boat, deselect previous boat and select that boat
                 if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.radius))
                 {
                     mouse.selectedBoat.selected = false;
@@ -67,7 +71,7 @@ while (!Raylib.WindowShouldClose())
                     boatClick = true;
                 }
             }
-            //If it didn't click on a boat
+            //If it didn't click on a boat, add nodes to the selected boats path
             if (!boatClick)
             {
                 mouse.AddNode(d);
@@ -97,6 +101,7 @@ while (!Raylib.WindowShouldClose())
             //If boat is offscreen
             if (b.center.X - b.radius > windowWidth || b.center.X + b.radius < 0 || b.center.Y - b.radius > windowHeight)
             {
+                //If the boat isn't invincible from just spawning
                 if (!b.invincible)
                 {
                     //If it still hadn't been docked, you lose
@@ -105,8 +110,7 @@ while (!Raylib.WindowShouldClose())
                         b.outsideArea = true;
                         gameState = "end";
                     }
-
-                    //else remove that boat from the list
+                    //Else remove that boat from the game 
                     else
                     {
                         boatRemovalList.Enqueue(b);
@@ -115,13 +119,11 @@ while (!Raylib.WindowShouldClose())
             }
         }
 
-
+        //Remove all boats added to the removal queue
         while (boatRemovalList.Count > 0)
         {
             boats.Remove(boatRemovalList.Dequeue());
         }
-
-
 
         //---------DRAWING---------
         Raylib.BeginDrawing();
@@ -132,7 +134,6 @@ while (!Raylib.WindowShouldClose())
         {
             b.Draw();
         }
-
 
         //Dock
         d.Draw();

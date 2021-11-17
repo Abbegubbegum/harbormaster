@@ -9,27 +9,32 @@ namespace harbormaster
     {
         //List of all nodes 
         public List<Vector2> nodes = new();
+
+        //If more nodes can be added or not
         public bool disabled = false;
-        // private Boat parentBoat;
 
-        // public Path(Boat b)
-        // {
-        //     parentBoat = b;
-        // }
+        //Reference to parent boat
+        private Boat parentBoat;
 
-        //Draws the rest of the path of the boat that is selected
+        public Path(Boat b)
+        {
+            parentBoat = b;
+        }
+
+        //Draws the path with black if boat is selected or gray if not
         public void Draw()
         {
-            if (nodes.Count > 1)
+            //Draw line from boat to first node
+            Raylib.DrawLineV(parentBoat.center, nodes[0], parentBoat.selected ? Color.BLACK : Color.GRAY);
+
+            //Draw the rest of the lines between the nodes
+            for (int i = 0; i < nodes.Count - 1; i++)
             {
-                for (int i = 0; i < nodes.Count - 1; i++)
-                {
-                    Raylib.DrawLineV(nodes[i], nodes[i + 1], Color.GRAY);
-                }
+                Raylib.DrawLineV(nodes[i], nodes[i + 1], parentBoat.selected ? Color.BLACK : Color.GRAY);
             }
         }
 
-        //Adds a node to the end of the path
+        //Adds a node to the end of the path aslong as the path isn't disabled
         public void AddNode(Vector2 target)
         {
             if (!disabled)

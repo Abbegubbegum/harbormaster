@@ -18,24 +18,24 @@ namespace harbormaster
         public Vector2 center;
         public int radius = 12;
 
-        //Color 
+        //Colors 
         private Color c = Color.RED;
         private Color fullRegularColor = Color.RED;
         private Color fullHighlightColor = Color.ORANGE;
         private Color dockedColor = Color.YELLOW;
         private Color finishedRegularColor = Color.LIME;
         private Color finishedHighlightedColor = Color.GREEN;
-        public bool selected = false;
 
         //Movement 
         public Vector2 dir;
         private float speed = 2f;
 
         //Pathfinding
-        public Path p = new Path();
+        public Path p;
         private readonly float pathCollisionMargin = 1f;
 
         //Game
+        public bool selected = false;
         public bool destroyed = false;
         public bool docked = false;
         public bool dockable = true;
@@ -43,17 +43,16 @@ namespace harbormaster
         private int dockTime = 5;
         public bool invincible = true;
 
+        //Spawning
+        private static Random r = new();
+        private readonly int outsideMargin = 20;
+
         //DEBUGGING
         public bool outsideArea = false;
 
-
-
-        //Spawning
-        private static Random r = new();
-        private int outsideMargin = 20;
-
         public Boat(bool randomize, int x = 0, int y = 0, int dirx = 0, int diry = 0)
         {
+            //If the boat should be randomly spawned
             if (randomize)
             {
                 //Randomizes one of the 3 edges for simplicity
@@ -78,6 +77,7 @@ namespace harbormaster
                 //Set movement direction to the center of the screen to make sure it comes on screen
                 SetDirToTarget(new Vector2(windowWidth / 2, windowHeight / 2));
             }
+            //If it shouldn't be randomized, set variables to the default or any special
             else
             {
                 center = new Vector2(x, y);
@@ -85,7 +85,8 @@ namespace harbormaster
                 dir = Vector2.Normalize(new Vector2(dirx, diry));
             }
 
-            // p = new Path(this);
+            //Add the path with a link to this boat object
+            p = new Path(this);
         }
 
         public void Update()
@@ -97,39 +98,37 @@ namespace harbormaster
             }
 
 
-
-            //If there isn't a path
-            if (p.nodes.Count == 0)
+            if (!docked)
             {
-                //If the path is disabled meaning that we had a path towards a dock but not anymore, the boat should be docked
-                if (p.disabled == true)
+                //If there is a path
+                if (p.nodes.Count > 0)
                 {
+                    //If it reached the next node of the path, remove it
+                    if (Raylib.CheckCollisionPointCircle(p.nodes[0], center, pathCollisionMargin))
+                    {
+                        p.RemoveFirstNode();
+                    }
+
+                    //If there still is a path after that, Set direction towards next node in path
+                    if (p.nodes.Count > 0)
+                    {
+                        SetDirToTarget(p.nodes[0]);
+                    }
+                }
+                //If there isn't a path at this point and the path is disabled meaning that we had a path towards a dock but not anymore
+                if (p.nodes.Count == 0 && p.disabled == true)
+                {
+                    //The boat should be docked
                     docked = true;
                     dockable = false;
                     dir = new Vector2(0, 0);
                     dockTimer++;
                 }
             }
-            //Else if it still isn't docked
-            else if (!docked)
-            {
-                //If it reached the next node of the path, remove it
-                if (Raylib.CheckCollisionPointCircle(p.nodes[0], center, pathCollisionMargin))
-                {
-                    p.RemoveFirstNode();
-                }
-            }
-            //If it still has a path
-            if (p.nodes.Count != 0 && !docked)
-            {
-                //Set direction towards next node in path
-                SetDirToTarget(p.nodes[0]);
-            }
 
             //Move it based on direction
             center.X += dir.X * speed;
             center.Y += dir.Y * speed;
-
 
             //If the number of frames it has been docked is equal to the full time in seconds, undock the boat
             if (dockTimer == dockTime * 60)
@@ -139,8 +138,6 @@ namespace harbormaster
                 dir = new Vector2(0, 1);
                 dockTimer = 0;
             }
-
-
 
             //Change color based on different values
             c = docked ? dockedColor : dockable ? selected ? fullHighlightColor : fullRegularColor : selected ? finishedHighlightedColor : finishedRegularColor;
@@ -157,17 +154,10 @@ namespace harbormaster
             // Raylib.DrawRectangleRec(rec, c);
             // Raylib.DrawTriangleLines(new Vector2(rec.x + rec.width, rec.y), new Vector2(rec.x + rec.width / 2, rec.y - TriangleLenght), new Vector2(rec.x, rec.y), Color.BLACK);
 
-            //You guessed it... if there is a path
+            //You guessed it... if there is a path draw it
             if (p.nodes.Count != 0)
             {
-                //Draw a line to the current path target
-                Raylib.DrawLineV(center, p.nodes[0], Color.BLACK);
-
-                //If the boat is selected, draw the rest of the path
-                if (selected)
-                {
-                    p.Draw();
-                }
+                p.Draw();
             }
 
         }
@@ -178,9 +168,11 @@ namespace harbormaster
             dir = Vector2.Normalize(target - center);
         }
 
-        //Called when the boat gets a path towards a dock
-        public void OnPathToDock()
+        //Called when the boat gets a pathed towards a dock
+        public void OnPathToDock(Dock d)
         {
+            p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
+            p.AddNode(d.center);
             p.Toggle();
         }
     }
