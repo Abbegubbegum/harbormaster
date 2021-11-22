@@ -59,6 +59,9 @@ namespace harbormaster
             disabled = !disabled;
         }
 
-
+        public void Reset()
+        {
+            nodes.Clear();
+        }
     }
 }

@@ -25,27 +25,35 @@ namespace harbormaster
             pos = new Vector2(Raylib.GetMouseX(), Raylib.GetMouseY());
 
             //If mouse is clicked this frame and is far enough away from last click, save the position, otherwise empty it
-            if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON) && (pos - clickPos).Length() >= newClickMargin)
+            if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
             {
-                clickPos = pos;
+                if ((pos - clickPos).Length() >= newClickMargin)
+                {
+                    clickPos = pos;
+                }
+                else
+                {
+                    clickPos = new Vector2();
+                }
             }
             else
-            {
-                clickPos = new Vector2();
-            }
-
-            //If right mouse is pressed, empty selected boat completely
-            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
             {
                 selectedBoat.selected = false;
                 selectedBoat = new Boat(false);
             }
 
+            //If right mouse is pressed, empty selected boat completely
+            // if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
+            // {
+            //     selectedBoat.selected = false;
+            //     selectedBoat = new Boat(false);
+            // }
+
             //If middle mouse is pressed, remove last node on selected boat path
-            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
-            {
-                selectedBoat.p.RemoveLastNode();
-            }
+            // if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_MIDDLE_BUTTON))
+            // {
+            //     selectedBoat.p.RemoveLastNode();
+            // }
 
 
         }

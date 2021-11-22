@@ -28,7 +28,7 @@ namespace harbormaster
 
         //Movement 
         public Vector2 dir;
-        private float speed = 2f;
+        private float speed = 1f;
 
         //Pathfinding
         public Path p;

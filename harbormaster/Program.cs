@@ -27,6 +27,7 @@ List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 4
 //Removal thing
 Queue<Boat> boatRemovalList = new();
 
+
 while (!Raylib.WindowShouldClose())
 {
     //MAIN GAME
@@ -69,6 +70,7 @@ while (!Raylib.WindowShouldClose())
                     b.selected = true;
                     mouse.selectedBoat = b;
                     boatClick = true;
+                    mouse.selectedBoat.p.Reset();
                 }
             }
             //If it didn't click on a boat, add nodes to the selected boats path
