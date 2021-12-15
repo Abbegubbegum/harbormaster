@@ -91,6 +91,9 @@ namespace harbormaster
 
         public void Update()
         {
+            //Incriment plz
+            dockTimer++;
+
             //If the boat is on the screen make it not invincible
             if (center.X + radius < windowWidth && center.X - radius > 0 && center.Y + radius < windowHeight && invincible)
             {
@@ -116,13 +119,9 @@ namespace harbormaster
                     }
                 }
                 //If there isn't a path at this point and the path is disabled meaning that we had a path towards a dock but not anymore
-                if (p.nodes.Count == 0 && p.disabled == true)
+                if (p.nodes.Count == 0 && p.disabled)
                 {
-                    //The boat should be docked
-                    docked = true;
-                    dockable = false;
-                    dir = new Vector2(0, 0);
-                    dockTimer++;
+                    BoatDock();
                 }
             }
 
@@ -131,10 +130,11 @@ namespace harbormaster
             center.Y += dir.Y * speed;
 
             //If the number of frames it has been docked is equal to the full time in seconds, undock the boat
-            if (dockTimer == dockTime * 60)
+            if (dockTimer == dockTime * 60 && docked)
             {
                 docked = false;
-                p.Toggle();
+                dockable = false;
+                p.disabled = false;
                 dir = new Vector2(0, 1);
                 dockTimer = 0;
             }
@@ -143,7 +143,16 @@ namespace harbormaster
             c = docked ? dockedColor : dockable ? selected ? fullHighlightColor : fullRegularColor : selected ? finishedHighlightedColor : finishedRegularColor;
         }
 
-
+        private void BoatDock()
+        {
+            //The boat should be docked
+            docked = true;
+            dockable = false;
+            dir = new Vector2(0, 0);
+            dockTimer = 0;
+            dockTimer++;
+            p.disabled = true;
+        }
 
         public void Draw()
         {
@@ -173,7 +182,7 @@ namespace harbormaster
         {
             p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
             p.AddNode(d.center);
-            p.Toggle();
+            p.disabled = true;
         }
     }
 }

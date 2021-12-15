@@ -54,14 +54,10 @@ namespace harbormaster
             disabled = false;
         }
 
-        public void Toggle()
-        {
-            disabled = !disabled;
-        }
-
         public void Reset()
         {
             nodes.Clear();
+            disabled = false;
         }
     }
 }

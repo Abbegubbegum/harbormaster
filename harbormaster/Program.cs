@@ -21,8 +21,16 @@ Mouse mouse = new();
 //Dock
 Dock d = new(windowWidth / 2);
 
-//Boat
-List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 400, 200, 5, 1) };
+//Boats
+List<Boat> activeBoats = new() { new Boat(true) };
+Queue<Boat> boatQueue = new Queue<Boat>();
+
+//Initialize Boat Queue
+for (int i = 0; i < 5; i++)
+{
+    boatQueue.Enqueue(new Boat(true));
+}
+
 
 //Removal thing
 Queue<Boat> boatRemovalList = new();
@@ -41,11 +49,11 @@ while (!Raylib.WindowShouldClose())
         if (frameCount / 60 == boatTimer)
         {
             frameCount = 0;
-            boats.Add(new Boat(true));
+            activeBoats.Add(boatQueue.Dequeue());
         }
 
         //If there are no more boats, the game is finished
-        if (boats.Count == 0)
+        if (activeBoats.Count == 0)
         {
             gameState = "complete";
         }
@@ -61,7 +69,7 @@ while (!Raylib.WindowShouldClose())
             bool boatClick = false;
 
             //For each boat
-            foreach (var b in boats)
+            foreach (var b in activeBoats)
             {
                 //If it clicked on boat, deselect previous boat and select that boat
                 if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.radius))
@@ -81,12 +89,12 @@ while (!Raylib.WindowShouldClose())
         }
 
         //Boat Movement
-        foreach (var b in boats)
+        foreach (var b in activeBoats)
         {
             b.Update();
 
             //Check each boat against each boat
-            foreach (var b2 in boats)
+            foreach (var b2 in activeBoats)
             {
                 //if they aren't the same, check if they crashed into eachother
                 if (!b.Equals(b2))
@@ -124,7 +132,7 @@ while (!Raylib.WindowShouldClose())
         //Remove all boats added to the removal queue
         while (boatRemovalList.Count > 0)
         {
-            boats.Remove(boatRemovalList.Dequeue());
+            activeBoats.Remove(boatRemovalList.Dequeue());
         }
 
         //---------DRAWING---------
@@ -132,7 +140,7 @@ while (!Raylib.WindowShouldClose())
         Raylib.ClearBackground(Color.SKYBLUE);
 
         //Boats
-        foreach (var b in boats)
+        foreach (var b in activeBoats)
         {
             b.Draw();
         }

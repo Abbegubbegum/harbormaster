@@ -24,7 +24,7 @@ namespace harbormaster
             //Updates mouse position
             pos = new Vector2(Raylib.GetMouseX(), Raylib.GetMouseY());
 
-            //If mouse is clicked this frame and is far enough away from last click, save the position, otherwise empty it
+            //If mouse click is down this frame and is far enough away from last click, save the position, otherwise empty it
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
             {
                 if ((pos - clickPos).Length() >= newClickMargin)
