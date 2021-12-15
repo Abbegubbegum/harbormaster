@@ -31,7 +31,15 @@ namespace harbormaster
             Dock d = new(windowWidth / 2);
 
             //Boat
-            List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 400, 200, 5, 1) };
+            List<Boat> boats = new();
+
+            //Boat queue
+            Queue<Boat> boatQueue = new();
+
+            for (int i = 0; i < 5; i++)
+            {
+                boatQueue.Enqueue(new Boat(true));
+            }
 
 
             //Removal thing
@@ -52,13 +60,13 @@ namespace harbormaster
                     if (frameCount / 60 == boatTimer)
                     {
                         frameCount = 0;
-                        boats.Add(new Boat(true));
+                        boats.Add(boatQueue.Dequeue());
                     }
 
-                    //If there are no more boats, the game is finished
-                    if (boats.Count == 0)
+                    //If the boat queue is empty, finish the game
+                    if (boatQueue.Count == 0)
                     {
-                        gameState = "complete";
+                        gameState = "end";
                     }
 
                     //Update all mouse inputs
