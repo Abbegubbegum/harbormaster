@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Numerics;
 using Raylib_cs;
 
+
 namespace harbormaster
+
 {
     class Program
     {
         static void Main(string[] args)
         {
+
             //RAYLIB SHIT
             const int windowWidth = 1020;
             const int windowHeight = 800;
@@ -20,6 +23,7 @@ namespace harbormaster
             int boatTimer = 10;
             int frameCount = 0;
 
+
             //Instanciate Mouse Class
             Mouse mouse = new();
 
@@ -29,11 +33,13 @@ namespace harbormaster
             //Boat
             List<Boat> boats = new() { new Boat(false, 100, 400, 1, 1000), new Boat(false, 400, 200, 5, 1) };
 
+
             //Removal thing
             Queue<Boat> boatRemovalList = new();
 
 
             while (!Raylib.WindowShouldClose())
+
             {
                 //MAIN GAME
                 if (gameState == "game")
