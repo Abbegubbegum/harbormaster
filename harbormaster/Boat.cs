@@ -11,8 +11,8 @@ namespace harbormaster
         // public Vector2 center = new Vector2(rec.x + rec.width / 2, rec.y + rec.height / 2)
         // public int TriangleLenght { get; private set; } = 10;
         //Global Variables
-        private const int windowWidth = 1020;
-        private const int windowHeight = 800;
+        protected const int windowWidth = 1020;
+        protected const int windowHeight = 800;
 
         //Body 
         public Vector2 center;
@@ -45,45 +45,15 @@ namespace harbormaster
 
         //Spawning
         private static Random r = new();
-        private readonly int outsideMargin = 20;
+        protected readonly int outsideMargin = 20;
 
-        //DEBUGGING
-        public bool outsideArea = false;
-
-        public Boat(bool randomize, int x = 0, int y = 0, int dirx = 0, int diry = 0)
+        public Boat(int x = 0, int y = 0, int dirx = 0, int diry = 0)
         {
-            //If the boat should be randomly spawned
-            if (randomize)
-            {
-                //Randomizes one of the 3 edges for simplicity
-                int edge = r.Next(0, 3);
 
-                //Randomizes the position on a line parallell of the random edge but offset with margin
-                switch (edge)
-                {
-                    case 0:
-                        center = new Vector2(-outsideMargin, r.Next(0 + radius, windowHeight - radius));
-                        break;
+            center = new Vector2(x, y);
 
-                    case 1:
-                        center = new Vector2(windowWidth + outsideMargin, r.Next(0 + radius, windowHeight - radius));
-                        break;
+            dir = Vector2.Normalize(new Vector2(dirx, diry));
 
-                    case 2:
-                        center = new Vector2(r.Next(0 + radius, windowWidth - radius), windowHeight + outsideMargin);
-                        break;
-                }
-
-                //Set movement direction to the center of the screen to make sure it comes on screen
-                SetDirToTarget(new Vector2(windowWidth / 2, windowHeight / 2));
-            }
-            //If it shouldn't be randomized, set variables to the default or any special
-            else
-            {
-                center = new Vector2(x, y);
-
-                dir = Vector2.Normalize(new Vector2(dirx, diry));
-            }
 
             //Add the path with a link to this boat object
             p = new Path(this);
@@ -121,7 +91,7 @@ namespace harbormaster
                 //If there isn't a path at this point and the path is disabled meaning that we had a path towards a dock but not anymore
                 if (p.nodes.Count == 0 && p.disabled)
                 {
-                    BoatDock();
+                    DockBoat();
                 }
             }
 
@@ -143,9 +113,8 @@ namespace harbormaster
             c = docked ? dockedColor : dockable ? selected ? fullHighlightColor : fullRegularColor : selected ? finishedHighlightedColor : finishedRegularColor;
         }
 
-        private void BoatDock()
+        private void DockBoat()
         {
-            //The boat should be docked
             docked = true;
             dockable = false;
             dir = new Vector2(0, 0);
@@ -183,6 +152,18 @@ namespace harbormaster
             p.AddNode(new Vector2(d.center.X, d.center.Y + (12 + 12 + 5)));
             p.AddNode(d.center);
             p.disabled = true;
+        }
+
+        public bool CheckBoatCrash(Boat b)
+        {
+            if (Raylib.CheckCollisionCircles(center, radius, b.center, b.radius))
+            {
+                destroyed = true;
+                b.destroyed = true;
+                return true;
+            }
+
+            return false;
         }
     }
 }

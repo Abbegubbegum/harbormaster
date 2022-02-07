@@ -21,7 +21,7 @@ namespace harbormaster
             //Game Variables
             string gameState = "game";
             int boatTimer = 10;
-            int frameCount = 0;
+            int frameCount = 500;
 
 
             //Instanciate Mouse Class
@@ -38,12 +38,12 @@ namespace harbormaster
 
             for (int i = 0; i < 5; i++)
             {
-                boatQueue.Enqueue(new Boat(true));
+                boatQueue.Enqueue(new RandomBoat());
             }
 
-
+            // OLD QUEUE SHIT
             //Removal thing
-            Queue<Boat> boatRemovalList = new();
+            // Queue<Boat> boatRemovalList = new();
 
 
             while (!Raylib.WindowShouldClose())
@@ -57,14 +57,13 @@ namespace harbormaster
                     frameCount++;
 
                     //If it has reached boatTimer seconds, reset clock and add new random boat
-                    if (frameCount / 60 == boatTimer)
+                    if (frameCount / 60 == boatTimer && boatQueue.Count > 0)
                     {
                         frameCount = 0;
                         boats.Add(boatQueue.Dequeue());
                     }
 
-                    //If the boat queue is empty, finish the game
-                    if (boatQueue.Count == 0)
+                    if (boatQueue.Count == 0 && boats.Count == 0)
                     {
                         gameState = "end";
                     }
@@ -78,18 +77,13 @@ namespace harbormaster
                     {
                         //Temporary variable boatClick
                         bool boatClick = false;
-
                         //For each boat
                         foreach (var b in boats)
                         {
                             //If it clicked on boat, deselect previous boat and select that boat
-                            if (Raylib.CheckCollisionPointCircle(mouse.clickPos, b.center, b.radius))
+                            if (mouse.CheckBoatClick(b))
                             {
-                                mouse.selectedBoat.selected = false;
-                                b.selected = true;
-                                mouse.selectedBoat = b;
                                 boatClick = true;
-                                mouse.selectedBoat.p.Reset();
                             }
                         }
                         //If it didn't click on a boat, add nodes to the selected boats path
@@ -100,51 +94,52 @@ namespace harbormaster
                     }
 
                     //Boat Movement
-                    foreach (var b in boats)
+                    for (int i = 0; i < boats.Count; i++)
                     {
-                        b.Update();
+                        boats[i].Update();
 
-                        //Check each boat against each boat
-                        foreach (var b2 in boats)
+                        //Check each boat thats infront in the list, therefore avoiding duplicate checks
+                        for (int j = i + 1; j < boats.Count; j++)
                         {
-                            //if they aren't the same, check if they crashed into eachother
-                            if (!b.Equals(b2))
+                            //if they crashed into eachother, end game
+                            if (boats[i].CheckBoatCrash(boats[j]))
                             {
-                                if (Raylib.CheckCollisionCircles(b.center, b.radius, b2.center, b2.radius))
-                                {
-                                    b.destroyed = true;
-                                    b2.destroyed = true;
-                                    gameState = "end";
-                                }
+                                gameState = "end";
                             }
                         }
 
                         //If boat is offscreen
-                        if (b.center.X - b.radius > windowWidth || b.center.X + b.radius < 0 || b.center.Y - b.radius > windowHeight)
+                        if (boats[i].center.X - boats[i].radius > windowWidth || boats[i].center.X + boats[i].radius < 0 || boats[i].center.Y - boats[i].radius > windowHeight)
                         {
                             //If the boat isn't invincible from just spawning
-                            if (!b.invincible)
+                            if (!boats[i].invincible)
                             {
                                 //If it still hadn't been docked, you lose
-                                if (b.dockable)
+                                if (boats[i].dockable)
                                 {
-                                    b.outsideArea = true;
                                     gameState = "end";
                                 }
                                 //Else remove that boat from the game 
                                 else
                                 {
-                                    boatRemovalList.Enqueue(b);
+                                    // OLD QUEUE SHIT
+                                    // boatRemovalList.Enqueue(boats[i]);
+
+                                    //Remove that boat from the game
+                                    boats.RemoveAt(i);
+                                    //Shift the pointer to adjust
+                                    i--;
                                 }
                             }
                         }
                     }
 
+                    // OLD QUEUE SHIT
                     //Remove all boats added to the removal queue
-                    while (boatRemovalList.Count > 0)
-                    {
-                        boats.Remove(boatRemovalList.Dequeue());
-                    }
+                    // while (boatRemovalList.Count > 0)
+                    // {
+                    //     boats.Remove(boatRemovalList.Dequeue());
+                    // }
 
                     //---------DRAWING---------
                     Raylib.BeginDrawing();

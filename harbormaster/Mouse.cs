@@ -13,7 +13,7 @@ namespace harbormaster
         public Vector2 clickPos = new();
 
         //Filled with a placeholder boat as default
-        public Boat selectedBoat = new(false);
+        public Boat selectedBoat = new Boat();
 
         //Margin for acceptable distance between clicks before registering
         private readonly int newClickMargin = 3;
@@ -39,7 +39,7 @@ namespace harbormaster
             else
             {
                 selectedBoat.selected = false;
-                selectedBoat = new Boat(false);
+                selectedBoat = new Boat();
             }
 
             //If right mouse is pressed, empty selected boat completely
@@ -70,6 +70,19 @@ namespace harbormaster
             {
                 selectedBoat.p.AddNode(clickPos);
             }
+        }
+
+        public bool CheckBoatClick(Boat b)
+        {
+            if (Raylib.CheckCollisionPointCircle(clickPos, b.center, b.radius))
+            {
+                selectedBoat.selected = false;
+                b.selected = true;
+                selectedBoat = b;
+                selectedBoat.p.Reset();
+                return true;
+            }
+            return false;
         }
     }
 }
