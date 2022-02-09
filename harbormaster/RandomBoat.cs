@@ -5,8 +5,9 @@ namespace harbormaster
 {
     public class RandomBoat : Boat
     {
-
-        private Random r = new Random();
+        private readonly int outsideMargin = 20;
+        private static Random r = new();
+        
         public RandomBoat() : base()
         {
             //Randomizes one of the 3 edges for simplicity

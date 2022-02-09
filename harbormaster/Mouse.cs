@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raylib_cs;
 
@@ -12,8 +13,10 @@ namespace harbormaster
         //Filled with an empty vector as default
         public Vector2 clickPos = new();
 
+        public bool clicked = false;
+
         //Filled with a placeholder boat as default
-        public Boat selectedBoat = new Boat();
+        public Boat selectedBoat = new();
 
         //Margin for acceptable distance between clicks before registering
         private readonly int newClickMargin = 3;
@@ -30,10 +33,7 @@ namespace harbormaster
                 if ((pos - clickPos).Length() >= newClickMargin)
                 {
                     clickPos = pos;
-                }
-                else
-                {
-                    clickPos = new Vector2();
+                    clicked = true;
                 }
             }
             else
@@ -58,18 +58,18 @@ namespace harbormaster
 
         }
 
-        public void AddNode(Dock d)
+        public void AddNode(List<Dock> docks)
         {
-            //if it clicked on a dock, add a node to dock position and set up shit for the dock
-            if (Raylib.CheckCollisionPointRec(clickPos, d.hitBox) && selectedBoat.dockable)
+            foreach (Dock dock in docks)
             {
-                selectedBoat.OnPathToDock(d);
+                //if it clicked on a dock, add a node to dock position and set up shit for the dock
+                if (Raylib.CheckCollisionPointRec(clickPos, dock.hitBox) && selectedBoat.dockable)
+                {
+                    selectedBoat.OnPathToDock(dock);
+                    return;
+                }
             }
-            //Else add regular node
-            else if (!Raylib.CheckCollisionPointRec(clickPos, d.hitBox))
-            {
-                selectedBoat.p.AddNode(clickPos);
-            }
+            selectedBoat.p.AddNode(clickPos);
         }
 
         public bool CheckBoatClick(Boat b)

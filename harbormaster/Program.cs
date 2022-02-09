@@ -27,8 +27,10 @@ namespace harbormaster
             //Instanciate Mouse Class
             Mouse mouse = new();
 
-            //Dock
-            Dock d = new(windowWidth / 2);
+            //Docks
+            List<Dock> dockList = new();
+            dockList.Add(new Dock(windowWidth / 4));
+            dockList.Add(new Dock(windowWidth / 4 * 3));
 
             //Boat
             List<Boat> boats = new();
@@ -73,7 +75,7 @@ namespace harbormaster
 
 
                     //If mouse clicked somewhere this frame
-                    if (mouse.clickPos != new Vector2())
+                    if (mouse.clicked)
                     {
                         //Temporary variable boatClick
                         bool boatClick = false;
@@ -89,7 +91,7 @@ namespace harbormaster
                         //If it didn't click on a boat, add nodes to the selected boats path
                         if (!boatClick)
                         {
-                            mouse.AddNode(d);
+                            mouse.AddNode(dockList);
                         }
                     }
 
@@ -144,6 +146,7 @@ namespace harbormaster
                     //---------DRAWING---------
                     Raylib.BeginDrawing();
                     Raylib.ClearBackground(Color.SKYBLUE);
+                    Raylib.DrawText("DRAG CLICK TO CONTROL BOATS", 295, 2, 26, Color.WHITE);
 
                     //Boats
                     foreach (var b in boats)
@@ -151,8 +154,11 @@ namespace harbormaster
                         b.Draw();
                     }
 
-                    //Dock
-                    d.Draw();
+                    //Docks
+                    foreach (var d in dockList)
+                    {
+                        d.Draw();
+                    }
 
                     Raylib.EndDrawing();
                 }

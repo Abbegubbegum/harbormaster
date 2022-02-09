@@ -18,7 +18,7 @@ namespace harbormaster
         public Vector2 center;
         public int radius = 12;
 
-        //Colors 
+        //Colors for different states 
         private Color c = Color.RED;
         private Color fullRegularColor = Color.RED;
         private Color fullHighlightColor = Color.ORANGE;
@@ -28,24 +28,22 @@ namespace harbormaster
 
         //Movement 
         public Vector2 dir;
-        private float speed = 1f;
+        private readonly float speed = 1f;
 
         //Pathfinding
         public Path p;
         private readonly float pathCollisionMargin = 1f;
 
-        //Game
+        //Different States
         public bool selected = false;
-        public bool destroyed = false;
+        public bool crashed = false;
         public bool docked = false;
         public bool dockable = true;
-        private int dockTimer = 0;
-        private int dockTime = 5;
         public bool invincible = true;
 
-        //Spawning
-        private static Random r = new();
-        protected readonly int outsideMargin = 20;
+        //Docktiming stuff
+        private int dockTimer = 0;
+        private readonly int dockTime = 5;
 
         public Boat(int x = 0, int y = 0, int dirx = 0, int diry = 0)
         {
@@ -132,7 +130,7 @@ namespace harbormaster
             // Raylib.DrawRectangleRec(rec, c);
             // Raylib.DrawTriangleLines(new Vector2(rec.x + rec.width, rec.y), new Vector2(rec.x + rec.width / 2, rec.y - TriangleLenght), new Vector2(rec.x, rec.y), Color.BLACK);
 
-            //You guessed it... if there is a path draw it
+            //If there is a path draw it
             if (p.nodes.Count != 0)
             {
                 p.Draw();
@@ -158,8 +156,8 @@ namespace harbormaster
         {
             if (Raylib.CheckCollisionCircles(center, radius, b.center, b.radius))
             {
-                destroyed = true;
-                b.destroyed = true;
+                crashed = true;
+                b.crashed = true;
                 return true;
             }
 
